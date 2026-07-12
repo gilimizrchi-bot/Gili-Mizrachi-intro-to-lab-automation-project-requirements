@@ -22,12 +22,12 @@ for (int i = 0; i< 10000; i++){
 }
 ```
 - test if lighting led still works. Why or why not?
-answer here: __________
+answer here: _it's not working because it's too busy calculating (changed to 100 and it worked)
 
 ## Use interrupt to light led
 - Add code to create an interrupt pin (why can't it be the button pin?). Use a variable for this.
 - Short the interrupt pin with the button pin
-- test. Does it work?
+- test. Does it work? it works with 100, not with 1000..
 
 ## Exercises
  - Comparison of AI changes if any:
