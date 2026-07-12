@@ -15,10 +15,12 @@ void loop() {
 
   if (buttonState == HIGH) {
     digitalWrite(ledPin, HIGH);
-    Serial.println("Button pressed -> LED ON");
+    Serial.print("Button pressed -> LED ON | buttonState = ");
+    Serial.println(buttonState);
   } else {
     digitalWrite(ledPin, LOW);
-    Serial.println("Button released -> LED OFF");
+    Serial.print("Button released -> LED OFF | buttonState = ");
+    Serial.println(buttonState);
   }
 
   delay(50);
