@@ -33,11 +33,7 @@ void loop() {
     Serial.println("Rising edge detected -> LED ON");
     risingEdgeDetected = false;
   }
-
-  for (int i = 0; i< 10; i++){
-    Serial.println("calculating...");
-}
-
+  
   if (fallingEdgeDetected) {
     ledOn = false;
     onDuration = millis() - onStartTime;
