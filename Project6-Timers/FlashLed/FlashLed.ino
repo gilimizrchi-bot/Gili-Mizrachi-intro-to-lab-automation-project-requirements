@@ -12,6 +12,8 @@ void handleButtonPress()
 
 void setup()
 {
+  Serial.begin(9600);
+
   pinMode(ledPin, OUTPUT);
   pinMode(buttonPin, INPUT_PULLUP);
 
@@ -32,4 +34,7 @@ void loop()
   {
     digitalWrite(ledPin, HIGH);
   }
+  for (int i = 0; i< 10000; i++){
+    Serial.println("calculating...");
+}
 }
