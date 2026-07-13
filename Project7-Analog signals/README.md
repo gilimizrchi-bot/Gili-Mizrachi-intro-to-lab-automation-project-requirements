@@ -30,13 +30,13 @@ Documentation on Servo [here](https://wiki.seeedstudio.com/Grove-Servo/)
 - connect analog 2 in adalm (dark blue) to digital 7 in arduino
 - install Servo package if not already installed
 - initialize Servo package with pin 7
-- first check in adalm the range of the mapped values. What frequency is the Servo package using?
+- first check in adalm the range of the mapped values. What frequency is the Servo package using? it is using 50Hz freq
 - connect to servo using D7 breakout (ground on the left on the side of the led). connect plus to servo
 - turn rotary to turn the servo
-- How does the range of the duty cycle in servo motor compare to the range of the duty cycle we used in the LED? Use the scope.
+- How does the range of the duty cycle in servo motor compare to the range of the duty cycle we used in the LED? Use the scope. the range of the duty is between 10%, you cannot go above it.
 - is the range of angles in our servo the same as the range of the angles in the Servo package? change the range of values to the servo accordingly.
 - Paste a screenshot of the scope showing the maximum duty cycle of the servo (the maximum angle the servo succeeded rotating without problems)
-
+![alt text](range.png)
 ## Exercises
  - Comparison of AI changes if any:
 - commit and push both .ino files and their folders to your repository
