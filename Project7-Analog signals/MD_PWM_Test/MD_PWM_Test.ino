@@ -2,7 +2,7 @@
 
 const int rotaryPin = A0;
 const uint8_t pwmPin = 4;     // PWM-capable pin connected to the LED through your wiring
-const uint16_t PWM_FREQ = 50; // Hz
+const uint16_t PWM_FREQ = 30; // Hz
 
 MD_PWM pwm(pwmPin);
 
