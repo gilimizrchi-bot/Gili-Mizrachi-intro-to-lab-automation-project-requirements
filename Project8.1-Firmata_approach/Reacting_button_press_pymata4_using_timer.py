@@ -89,7 +89,7 @@ class FirmataApp:
         self.board.set_pin_mode_digital_output(LED_PIN)
         self.board.digital_write(LED_PIN, 0)
         self.board.set_pin_mode_digital_input_pullup(BUTTON_PIN)
-        self.board.digital_read(BUTTON_PIN, callback=self._button_callback)
+        self.board.digital_read(BUTTON_PIN, self._button_callback)
 
         self.connect_btn.config(state="disabled")
         self.disconnect_btn.config(state="normal")
