@@ -24,6 +24,24 @@
 8. Include comments explaining the functionality of each part of the code.
 9. Write the script in a clean, organized, and efficient manner following good programming practices.
 
+## Run the GUI script
+1. Upload the `firmataexpress` sketch to the Arduino board using the Arduino IDE.
+2. Install `pymata4` in your Python environment: `pip install pymata4`.
+3. Connect the Arduino to the computer and note the COM port (for example `COM4`).
+4. Wire the button and LED as follows:
+   - `BUTTON_PIN` = digital pin 3 with pull-up enabled in the sketch.
+   - `LED_PIN` = digital pin 4.
+   - Use a button between pin 3 and ground, with the internal pull-up enabled by the script.
+   - Connect the LED with a resistor to pin 4 and ground.
+5. Run the script from the folder:
+   - `python Reacting_button_press_pymata4_using_timer.py`
+6. In the GUI, enter the COM port and the LED duration in milliseconds, then click `Connect`.
+7. Press the button to turn the LED on; it will turn off automatically after the configured time.
+
+## Notes
+- The GUI shows the current button state and logs actions.
+- If `pymata4` is not installed, the script will prompt you to install it.
+- Use a short duration like `30` ms to measure the LED pulse with a logic analyzer or oscilloscope.
 
 ## Exercises
 Comparison of AI changes if any:
