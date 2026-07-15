@@ -17,8 +17,8 @@
 
 ## Requirements
 Build a system that: 
-1. Operates the mini fan. The fan is on the servo motor.
-1. changes the angle of the servo motor (and the fan) based on the accelerometer sensor readings.
+1. Operates the mini fan. The fan is on the servo motor.V
+1. changes the angle of the servo motor (and the fan) based on the accelerometer sensor readings.V
 2. displays the angle in the OLED display and buzzer state.
 3. if the angle exceeds a certain threshold, the buzzer should sound and the fan should stop. when returning to a valid angle, the buzzer should stop sounding and the fan should start again.
 4. log the time since program start, the angle (in degrees) and the buzzer state in a csv file (where should this be done, from the Arduino or the Python code?).
@@ -32,7 +32,7 @@ Build a system that:
     - use constants where possible
     - define variables and constants at the beginning of the code
     - encapsulate chunks of code that perform a single function into a function with a logical name.
-
+<video controls src="20260715_151534.mp4" title="Title"></video>
 ## Exercises
 1. paste here the videos (one fo the hardware and one of the GUI).
 3. add the csv file to the project. make sure it reflects all the states of the project.
