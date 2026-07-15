@@ -7,7 +7,7 @@ const int BUZZER_PIN = 5;
 const int ANGLE_THRESHOLD = 45;
 const int SERVO_MIN_ANGLE = 0;
 const int SERVO_MAX_ANGLE = 170;
-const int FAN_ACTIVE_MAX_ANGLE = 45;
+const int FAN_ACTIVE_MIN_ANGLE = 46;
 
 Servo fanServo;
 int currentServoAngle = 90;
@@ -33,7 +33,8 @@ void setup() {
 
 void loop() {
   updateServoFromAccelerometer();
-  bool buzzerOn = (currentServoAngle <= FAN_ACTIVE_MAX_ANGLE);
+  bool fanIsWorking = (currentServoAngle >= FAN_ACTIVE_MIN_ANGLE);
+  bool buzzerOn = (currentServoAngle <= ANGLE_THRESHOLD);
 
   if (buzzerOn) {
     tone(BUZZER_PIN, 2000);
@@ -41,6 +42,7 @@ void loop() {
     noTone(BUZZER_PIN);
   }
 
+  setFanPower(fanIsWorking);
   displayStatus(currentServoAngle, buzzerOn);
   delay(200);
 }
@@ -52,7 +54,6 @@ void setFanPower(bool enabled) {
 void setServoAngle(int angle) {
   currentServoAngle = constrain(angle, SERVO_MIN_ANGLE, SERVO_MAX_ANGLE);
   fanServo.write(currentServoAngle);
-  setFanPower(currentServoAngle <= FAN_ACTIVE_MAX_ANGLE);
 }
 
 void updateServoFromAccelerometer() {
