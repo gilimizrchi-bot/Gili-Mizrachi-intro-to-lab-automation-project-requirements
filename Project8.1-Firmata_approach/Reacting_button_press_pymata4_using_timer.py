@@ -8,7 +8,7 @@ threading.Timer to turn the LED off after the configured time interval.
 import threading
 import time
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
+from tkinter import messagebox, scrolledtext, ttk
 
 try:
     from pymata4 import pymata4
@@ -21,6 +21,7 @@ BUTTON_PIN = 3
 
 # Default timer duration in milliseconds
 DEFAULT_DURATION_MS = 30
+DEFAULT_COM_PORT = "COM4"
 
 
 class FirmataApp:
@@ -30,9 +31,9 @@ class FirmataApp:
 
         self.board = None
         self.timer = None
-        self.button_state = tk.StringVar(value="Unknown")
+        self.button_state = tk.StringVar(value="Disconnected")
         self.duration_var = tk.StringVar(value=str(DEFAULT_DURATION_MS))
-        self.port_var = tk.StringVar(value="COM4")
+        self.port_var = tk.StringVar(value=DEFAULT_COM_PORT)
 
         self._build_interface()
 
@@ -69,35 +70,41 @@ class FirmataApp:
         self.root.columnconfigure(0, weight=1)
 
     def connect(self):
+        """Open Firmata connection and configure the Arduino pins."""
         if pymata4 is None:
-            messagebox.showerror("Missing dependency", "pymata4 is required. Install with:\n  pip install pymata4")
+            messagebox.showerror(
+                "Missing dependency",
+                "pymata4 is required. Install with:\n  pip install pymata4",
+            )
             return
 
+        com_port = self.port_var.get().strip() or DEFAULT_COM_PORT
         try:
-            self.board = pymata4.Pymata4(com_port="COM4")
+            self.board = pymata4.Pymata4(com_port=com_port)
         except Exception as exc:
             self.log_message(f"Failed to connect: {exc}")
             self.board = None
             return
 
-        # Configure pins on the Arduino side
         self.board.set_pin_mode_digital_output(LED_PIN)
         self.board.digital_write(LED_PIN, 0)
-        self.board.set_pin_mode_digital_input_pullup(BUTTON_PIN)
-        self.board.digital_read(BUTTON_PIN, self._button_callback)
+        self.board.set_pin_mode_digital_input_pullup(BUTTON_PIN, self._button_callback)
 
         self.connect_btn.config(state="disabled")
         self.disconnect_btn.config(state="normal")
         self.set_btn.config(state="normal")
-        self.log_message(f"Connected to {port}")
+        self.button_state.set("Released")
+        self.log_message(f"Connected to {com_port}")
         self.log_message(f"Monitoring button on pin {BUTTON_PIN}, LED on pin {LED_PIN}")
         self.set_duration()
 
     def disconnect(self):
+        """Stop the timer and disconnect from the board."""
+        if self.timer:
+            self.timer.cancel()
+            self.timer = None
+
         if self.board:
-            if self.timer:
-                self.timer.cancel()
-                self.timer = None
             try:
                 self.board.shutdown()
             except Exception:
@@ -111,19 +118,25 @@ class FirmataApp:
         self.log_message("Disconnected")
 
     def set_duration(self):
-        if not self.duration_var.get().strip().isdigit():
+        """Validate the duration input and report the selected value."""
+        value = self.duration_var.get().strip()
+        if not value.isdigit():
             self.log_message("Duration must be a positive integer.")
-            return
+            return False
 
-        value = int(self.duration_var.get().strip())
-        if value <= 0:
+        duration_ms = int(value)
+        if duration_ms <= 0:
             self.log_message("Duration must be greater than 0.")
-            return
+            return False
 
-        self.log_message(f"Timer duration set to {value} ms")
+        self.log_message(f"Timer duration set to {duration_ms} ms")
+        return True
 
     def _button_callback(self, data):
-        # data is [pin, value]
+        """Receive callbacks from pymata4 and forward them to the main GUI thread."""
+        self.root.after(0, lambda: self._handle_button_event(data))
+
+    def _handle_button_event(self, data):
         if len(data) < 2:
             return
 
@@ -137,20 +150,28 @@ class FirmataApp:
             self.log_message("Button released")
 
     def _turn_led_on(self):
+        """Turn on the LED and schedule it to turn off after the timer interval."""
         if self.board is None:
             return
 
+        if not self.set_duration():
+            return
+
+        duration_ms = int(self.duration_var.get().strip())
         self.board.digital_write(LED_PIN, 1)
         self.log_message("LED ON")
 
         if self.timer:
             self.timer.cancel()
 
-        duration_ms = int(self.duration_var.get().strip()) if self.duration_var.get().strip().isdigit() else DEFAULT_DURATION_MS
         self.timer = threading.Timer(duration_ms / 1000.0, self._turn_led_off)
         self.timer.start()
 
     def _turn_led_off(self):
+        """Schedule the LED off action on the Tk main thread."""
+        self.root.after(0, self._finalize_led_off)
+
+    def _finalize_led_off(self):
         if self.board is None:
             return
 
@@ -159,13 +180,18 @@ class FirmataApp:
         self.timer = None
 
     def log_message(self, message):
+        """Append a timestamped message to the UI log from any thread."""
         timestamp = time.strftime("%H:%M:%S")
-        self.log.configure(state="normal")
-        self.log.insert("end", f"[{timestamp}] {message}\n")
-        self.log.configure(state="disabled")
-        self.log.see("end")
+        if threading.current_thread() == threading.main_thread():
+            self.log.configure(state="normal")
+            self.log.insert("end", f"[{timestamp}] {message}\n")
+            self.log.configure(state="disabled")
+            self.log.see("end")
+        else:
+            self.root.after(0, lambda: self.log_message(message))
 
     def on_close(self):
+        """Cleanly disconnect and close the GUI."""
         self.disconnect()
         self.root.destroy()
 
